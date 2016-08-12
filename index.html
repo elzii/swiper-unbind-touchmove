@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Swiper demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.3.1/css/swiper.min.css">
+
+    <!-- Demo styles -->
+    <style>
+    html, body {
+      position: relative;
+      height: 100%;
+    }
+    body {
+      background: #eee;
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color:#000;
+      margin: 0;
+      padding: 0;
+    }
+    .swiper-wrap {
+      width: 100%;
+      /*height: 80%;*/
+      height: 100%;
+    }
+    .swiper-container {
+      width: 100%;
+      height: 100%;
+    }
+    .swiper-slide {
+      text-align: center;
+      font-size: 22px;
+      background: #fff;
+
+      /* Center slide text vertically */
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+
+      background-size: cover;
+      background-position: 50% 50%;
+      background-repeat: no-repeat;
+    }
+
+    .content {
+      padding: 30px 15px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin:0 auto;
+    }
+
+    .touch-overlay {
+      display: none;
+      position: absolute;
+      top:0;left:0;
+      width:100%;height:110%;
+      z-index:99999;
+      background-color: rgba(255,0,0,0.2);
+
+    }
+    </style>
+</head>
+<body>
+    <div class="swiper-wrap">
+      <div id="touchOverlay" class="touch-overlay"></div>
+      <div id="swiper" class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">Slide 1</div>
+            <div class="swiper-slide">Slide 2</div>
+            <div class="swiper-slide">Slide 3</div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+
+    <div id="content" class="content">
+      <div class="container">
+        <h1>Header 1</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias totam vero fuga dolorum explicabo suscipit aliquam hic blanditiis soluta officiis, corrupti consequatur nostrum sint possimus neque eos temporibus amet placeat.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias totam vero fuga dolorum explicabo suscipit aliquam hic blanditiis soluta officiis, corrupti consequatur nostrum sint possimus neque eos temporibus amet placeat.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias totam vero fuga dolorum explicabo suscipit aliquam hic blanditiis soluta officiis, corrupti consequatur nostrum sint possimus neque eos temporibus amet placeat.</p>
+        <h2>Header 2</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias totam vero fuga dolorum explicabo suscipit aliquam hic blanditiis soluta officiis, corrupti consequatur nostrum sint possimus neque eos temporibus amet placeat.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias totam vero fuga dolorum explicabo suscipit aliquam hic blanditiis soluta officiis, corrupti consequatur nostrum sint possimus neque eos temporibus amet placeat.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias totam vero fuga dolorum explicabo suscipit aliquam hic blanditiis soluta officiis, corrupti consequatur nostrum sint possimus neque eos temporibus amet placeat.</p>
+      </div>
+    </div>
+
+
+    <script
+      src="https://code.jquery.com/jquery-3.1.0.min.js"
+      integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.3.1/js/swiper.min.js"></script>
+
+    <!-- Initialize Swiper -->
+    <script>
+
+    var $el = {
+      swiper: $('#swiper'),
+      touchOverlay: $('#touchOverlay'),
+      content: $('#content')
+    }
+
+    var lastY = 0;
+
+    var s = new Swiper('.swiper-container', {
+      pagination: '.swiper-pagination',
+      paginationClickable: true,
+      direction: 'vertical',
+      onReachEnd: function(swiper) {
+        // console.log('onReachEnd(), unbind touchmove', swiper, this)
+        // s.lockSwipeToNext()
+
+        $el.touchOverlay.show()
+      },
+      onSlideChangeStart: function() {},
+      onSlideChangeEnd: function() {},
+      onSlideNextStart: function() {},
+      onSlideNextEnd: function(swiper, event) {
+        console.log('onSlideNextEnd', swiper, event)
+
+        if ( swiper.isEnd && $el.touchOverlay.is(':hidden') ) {
+          
+          swiper.on('touchMove', function(si, e) {
+            console.log('isEnd, touchOverlay hidden, slideNextEnd', si, e)
+
+            var currentY = e.changedTouches ? e.changedTouches[0].clientY : window.pageYOffset;
+
+            if ( currentY > lastY ) {
+              // down
+              if ( window.pageYOffset <= 0 ) {
+                $el.touchOverlay.show()
+              }
+            } 
+            if( currentY < lastY ) {
+              // up
+              if ( window.pageYOffset <= 0 ) {
+                $el.touchOverlay.hide()
+              }
+            }
+
+          })
+        }
+
+      },
+      onSlidePrevStart: function() {},
+      onSlidePrevEnd: function() {},
+      onTouchMove: function(swiper, event) {}
+    });
+
+    
+    $(window).on('scroll', function (event) {
+      if ( window.pageYOffset <= 0 ) {
+        $el.touchOverlay.hide()
+      }
+    })
+
+
+
+    function elementInViewport(el) {
+      var top = el.offsetTop;
+      var left = el.offsetLeft;
+      var width = el.offsetWidth;
+      var height = el.offsetHeight;
+
+      while(el.offsetParent) {
+        el = el.offsetParent;
+        top += el.offsetTop;
+        left += el.offsetLeft;
+      }
+
+      return (
+        top < (window.pageYOffset + window.innerHeight) &&
+        left < (window.pageXOffset + window.innerWidth) &&
+        (top + height) > window.pageYOffset &&
+        (left + width) > window.pageXOffset
+      );
+    }
+
+    </script>
+</body>
+</html>
